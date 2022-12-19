@@ -1,0 +1,103 @@
+.wrapper {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.modelLoadIndicator {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.description {
+  display: block;
+  width: 100hv;
+  height: 40px;
+  line-height: 40px;
+  font-size: 12px;
+  font-family: sans-serif;
+  text-decoration: none;
+  color: #CAF0F8;
+}
+
+a {
+  display: block;
+  width: 200px;
+  height: 30px;
+  line-height: 30px;
+  font-size: 14px;
+  font-family: sans-serif;
+  text-decoration: none;
+  color: #CAF0F8;
+  border: 2px solid #48CAE4;
+  letter-spacing: 2px;
+  text-align: center;
+  position: relative;
+  transition: all .35s;
+  align-items: center;
+  margin: auto;
+}
+
+progress {
+  display: block;
+  width: 100hv;
+  height: 40px;
+  color: #03045E;
+}
+
+progress::-moz-progress-bar {
+  background: #03045E;
+}
+
+progress::-webkit-progress-value {
+  background: #03045E !important;
+}
+
+p {
+  display: block;
+  width: 100hv;
+  height: 40px;
+  line-height: 40px;
+  font-size: 18px;
+  font-family: sans-serif;
+  text-decoration: none;
+  color: #CAF0F8;
+  letter-spacing: 2px;
+  text-align: center;
+  justify-content: center;
+}
+
+a span {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+}
+
+a:hover {
+  color: #48CAE4;
+}
+
+a:hover:after {
+  width: 100%;
+}
+
+body {
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+}
+
+div.logo-container {
+  position: relative;
+  height: 150px;
+}
+
+div.logo-container img {
+  position: absolute;
+  right: 0;
+  bottom: 150;
+}
