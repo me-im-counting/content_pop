@@ -393,7 +393,7 @@ function renderDisplacement(w, h, imgData, depthData) {
 
 function makeDepthMap(session, img) {
     const processingModel = document.getElementById("processing-data-progress");
-    var cnv = document.getElementById("output-view");
+    var cnv = document.getElementById("staging-canvas");
     const size = Math.min(img.width, img.height);
     const xOffset = size < img.width ? (img.width - size) / 2  : 0;
     const yOffset = size < img.height ? (img.height - size) / 2 : 0;
@@ -550,9 +550,9 @@ async function createONNXSession(modelBlob) {
         
         loadingModelProgess.style.display = "none";
         fileSelectContainer.style.display = "block";
-        const fileSelect = document.getElementById("fileSelect");
+        const fileSelect = document.getElementById("file-select-button");
         const urlInput = document.getElementById("url-input");
-        fileElem = document.getElementById("fileElem");
+        fileElem = document.getElementById("file-elem");
         selectUrl = document.getElementById("select-url");
         selectUrl.addEventListener("click", ()=>{
             const img = document.createElement("img");
@@ -577,7 +577,7 @@ async function createONNXSession(modelBlob) {
             fileElem.addEventListener("change", handleFiles, false);
 
             function handleFiles() {
-                for (let i = 0; i < this.files.length; i++) {
+                if (this.files.length >= 1) {
                     const img = document.createElement("img");
                     const processingModel = document.getElementById("processing-data-progress");
                     processingModel.style.display = "block";
@@ -585,8 +585,7 @@ async function createONNXSession(modelBlob) {
                     img.onload = () => {
                         makeDepthMap(session, img);
                     }    
-                    img.src = URL.createObjectURL(this.files[i]);
-                    
+                    img.src = URL.createObjectURL(this.files[0]);
                 }
         }
         
