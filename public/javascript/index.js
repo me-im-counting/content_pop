@@ -509,10 +509,12 @@ function get(key, customStore = defaultGetStore()) {
 }
 
 async function fetchModelBlob(url, next) {
+    console.log("fetching model weights");
     const downloadProgress = document.getElementById("download-progress");
     const modelData = await get("modelData");
     if (modelData != null) {
         downloadProgress.value = 100;
+        console.log("fetching model weights - success from cache");
         next(modelData);
         return;
     }
@@ -527,24 +529,25 @@ async function fetchModelBlob(url, next) {
             resolve(xhr.readyState === 4 && xhr.status === 200);
         });
         
-        xhr.addEventListener("load", () => {           
-            xhr.response.arrayBuffer().then((result)=>{
-                set("modelData", result);
-                next(result);
-            });
-            
-        });
         xhr.open("GET", url, true);
         xhr.responseType = "blob";
         xhr.setRequestHeader("Content-Type", "application/octet-stream");
         xhr.send();
     });
-    console.log("success:", success);
+    console.log("fetching model weights - from server success=", success);
+    if (success) {
+        xhr.response.arrayBuffer().then((result)=>{
+            set("modelData", result);
+            next(result);
+        }).catch(error => console.log("failed to get model weights as arrayBuffer"));
+    }    
 }
 
 async function createONNXSession(modelBlob) {
     try {
+        console.log("loading model weights");
         const session = await ort.InferenceSession.create(modelBlob, 0);
+        console.log("loading model weights - success");
         const fileSelectContainer = document.getElementById("select-file");
         const loadingModelProgess = document.getElementById("loading-model-progress");
         
