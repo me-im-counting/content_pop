@@ -13,6 +13,10 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/html/index.html'));
 })
 
+app.get('/.well-known/acme-challenge/xnCO8GhMXtTiOGMovFHl9zF3yB_8Mf13qVxPGjsFC4c', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public/a.txt'));
+})
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
