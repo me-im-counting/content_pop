@@ -9,7 +9,7 @@ const model_info = {
         desired_height: 256,
     },
     'large': {
-        path: "midas_s.onnx",
+        path: "midas_l.onnx",
         desired_width: 384,
         desired_height: 384,
     }
