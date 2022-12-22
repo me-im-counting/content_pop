@@ -1,10 +1,19 @@
  
-let cubeRotation = 0.0;
+let rotation = 0.0;
 let deltaTime = 0;
 
-const model_path = "midas.onnx";
-const model_desired_width = 384;
-const model_desired_height = 384;
+const model_info = {
+    'small': {
+        path: "midas_s.onnx",
+        desired_width: 256,
+        desired_height: 256,
+    },
+    'large': {
+        path: "midas_s.onnx",
+        desired_width: 384,
+        desired_height: 384,
+    }
+}
 
  var state = {
     gl: null,
@@ -17,10 +26,8 @@ const model_desired_height = 384;
       mouse: {
         lastX: -1,
         lastY: -1,
-      },
-      pressedKeys: {},
-    },
-    animation: {},
+      },      
+    },    
     app: {
       angle: {
         x: 0,
@@ -33,6 +40,7 @@ const model_desired_height = 384;
       },
     },
     autoRotate: true,
+    model: model_info['small'],
   };
 
 function constrainToMultipleOf(value,  max_val, alignment) {
@@ -59,13 +67,11 @@ function constrainToMultipleOf(value,  max_val, alignment) {
     return [new_width, new_height];
 }
 
-
-
 function isPowerOf2(value) {
   return (value & (value - 1)) === 0;
 }
 
-function drawScene(gl, programInfo, buffers, texture, depth, cubeRotation) {
+function drawScene(gl, programInfo, buffers, texture, depth, rotation) {
     gl.clearColor(0.04, 0.043, 0.109, 1.0); // Clear to black, fully opaque
     gl.clearDepth(1.0); // Clear everything
     gl.enable(gl.DEPTH_TEST); // Enable depth testing
@@ -92,8 +98,8 @@ function drawScene(gl, programInfo, buffers, texture, depth, cubeRotation) {
     ); // amount to translate
 
     if (state.autoRotate) {
-        mat4.rotateX(modelViewMatrix, modelViewMatrix, Math.sin(cubeRotation) * 0.05);   
-        mat4.rotateY(modelViewMatrix, modelViewMatrix, Math.cos(cubeRotation) * 0.05);   
+        mat4.rotateX(modelViewMatrix, modelViewMatrix, Math.sin(rotation) * 0.05);   
+        mat4.rotateY(modelViewMatrix, modelViewMatrix, Math.cos(rotation) * 0.05);   
     }
     mat4.rotateX(modelViewMatrix, modelViewMatrix, state.app.angle.x);
     mat4.rotateY(modelViewMatrix, modelViewMatrix, state.app.angle.y);
@@ -382,8 +388,8 @@ function renderDisplacement(w, h, imgData, depthData) {
         deltaTime = now - then;
         then = now;
 
-        drawScene(state.gl, state.shaderProgramInfo, buffers, texture, depth, cubeRotation);
-        cubeRotation += deltaTime;
+        drawScene(state.gl, state.shaderProgramInfo, buffers, texture, depth, rotation);
+        rotation += deltaTime;
 
         requestAnimationFrame(render);
     }
@@ -397,7 +403,7 @@ function makeDepthMap(session, img) {
     const size = Math.min(img.width, img.height);
     const xOffset = size < img.width ? (img.width - size) / 2  : 0;
     const yOffset = size < img.height ? (img.height - size) / 2 : 0;
-    const scaled_size  = getScaleSize(size, size, model_desired_width, model_desired_height);
+    const scaled_size  = getScaleSize(size, size, state.model.desired_width, state.model.desired_height);
     const w = cnv.width = scaled_size[0];
     const h = cnv.height = scaled_size[1];
     var ctx = cnv.getContext("2d", { willReadFrequently: true });
@@ -530,23 +536,22 @@ async function fetchModelBlob(url, next) {
         });
         
         xhr.open("GET", url, true);
-        xhr.responseType = "blob";
+        xhr.responseType = "arraybuffer";
         xhr.setRequestHeader("Content-Type", "application/octet-stream");
         xhr.send();
     });
     console.log("fetching model weights - from server success=", success);
     if (success) {
-        xhr.response.arrayBuffer().then((result)=>{
-            set("modelData", result);
-            next(result);
-        }).catch(error => console.log("failed to get model weights as arrayBuffer"));
+        const data = new Uint8Array(xhr.response);
+        set("modelData", data);
+        next(data);
     }    
 }
 
 async function createONNXSession(modelBlob) {
     try {
         console.log("loading model weights");
-        const session = await ort.InferenceSession.create(modelBlob, 0);
+        const session = await ort.InferenceSession.create(modelBlob);
         console.log("loading model weights - success");
         const fileSelectContainer = document.getElementById("select-file");
         const loadingModelProgess = document.getElementById("loading-model-progress");
@@ -600,7 +605,7 @@ async function createONNXSession(modelBlob) {
 
 
 async function main() {
-    fetchModelBlob(model_path, createONNXSession);
+    fetchModelBlob(state.model.path, createONNXSession);
 }
 
 main();
