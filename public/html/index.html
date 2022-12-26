@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <header>
-    <title>3Dfy your image - ONNX runtime demo</title>
+    <title>Make your image 3D</title>
     <link rel="icon" type="image/x-icon" href="favicon.ico">
 </header>
 
@@ -16,6 +16,13 @@
         gtag('config', 'G-CR8RMELVZT');
     </script>
     <link rel="stylesheet" href="index.css">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="description" content="Convert your image to 3D">
+        <meta name="keywords" content="3d, 2D to 3D, 2d">
+        <meta name="author" content="Elastic One">
+    </head>
 </head>
 
 <body style="background-color:rgb(10, 11, 28)">
@@ -23,15 +30,26 @@
         <img src="spinner.gif" class="model-load-indicator">
         <p>Loading AI model...</p>
         <progress id="download-progress" value="0" max="100" style="margin:auto;"></progress>
+        <p class="description-small">first load might take a bit</p>
     </div>
     <div id="select-file">
         <input type="file" id="file-elem" accept="image/*" style="display:none" />
+        <p>Make image 3D</p>
         <a href="#" id="file-select-button" class="button">Select Image*</a> <br>
         <input type="url" id="url-input" placeholder="URL to image" /><br>
         <a href="#" id="select-url" class="button">Or use URL</a>
         <p class="description">*image will not leave your device</p>
         <canvas id="staging-canvas" style="display:none;"></canvas>
+        <canvas id="texture-canvas" style="display:none;"></canvas>
         <canvas id="gl-canvas" width="800" height="600"></canvas>
+        <br>
+        <p class="description-small">AI quality</p>
+        <select name="models" id="models" style="display: block; margin: auto;">
+            <option value="small">MiDaS v21 Small</option>
+            <option value="large">MiDaS v21 Large</option>
+        </select>
+        <br>
+        <a href="#" id="select-model" class="button">Load model</a>
     </div>
     <div id="processing-data-progress" style="display:none;margin-top:20%;">
         <img src="spinner.gif" class="model-load-indicator">

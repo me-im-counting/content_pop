@@ -2,7 +2,7 @@
 let rotation = 0.0;
 let deltaTime = 0;
 
-const model_info = {
+const modelInfo = {
     'small': {
         path: "midas_s.onnx",
         desired_width: 256,
@@ -40,7 +40,12 @@ const model_info = {
       },
     },
     autoRotate: true,
-    model: model_info['small'],
+    model: modelInfo['small'],
+    session: null,
+    buffers: null,
+    colorTexture: null,
+    depthTexture: null,
+    renderScene: false,
   };
 
 function constrainToMultipleOf(value,  max_val, alignment) {
@@ -72,8 +77,8 @@ function isPowerOf2(value) {
 }
 
 function drawScene(gl, programInfo, buffers, texture, depth, rotation) {
-    gl.clearColor(0.04, 0.043, 0.109, 1.0); // Clear to black, fully opaque
-    gl.clearDepth(1.0); // Clear everything
+    gl.clearColor(0.04, 0.043, 0.109, 1.0);
+    gl.clearDepth(1.0);
     gl.enable(gl.DEPTH_TEST); // Enable depth testing
     gl.depthFunc(gl.LEQUAL); // Near things obscure far things
 
@@ -133,7 +138,6 @@ function drawScene(gl, programInfo, buffers, texture, depth, rotation) {
     gl.uniform1i(programInfo.uniformLocations.uSampler, 0);
 
     if (depth != null) {
-
         gl.activeTexture(gl.TEXTURE1);
         gl.bindTexture(gl.TEXTURE_2D, depth);
         gl.uniform1i(programInfo.uniformLocations.depthTexture, 1);
@@ -142,7 +146,6 @@ function drawScene(gl, programInfo, buffers, texture, depth, rotation) {
     {
         const type = gl.UNSIGNED_INT;
         const offset = 0;
-     
         gl.drawElements(gl.TRIANGLES, buffers.vertexCount, type, offset);
     }
 }
@@ -363,10 +366,23 @@ function initializeRenderer(state) {
     };
     state.shaderProgramInfo = programInfo;
     state.initialized = true;
+    let then = 0;
+    function render(now) {
+        now *= 0.001;
+        deltaTime = now - then;
+        then = now;
+        if (state.renderScene) {
+            drawScene(state.gl, state.shaderProgramInfo, state.buffers, state.colorTexture, state.depthTexture, rotation);
+        }
+        rotation += deltaTime;
+
+        requestAnimationFrame(render);
+    }
+    requestAnimationFrame(render);
     return true;
 }
 
-function renderDisplacement(w, h, imgData, depthData) {
+function renderDisplacement(sourceWidth, sourceHeight, depthWidth, depthHeight, imgData, depthData) {
     if (!initializeRenderer(state)) {
         return;
     }
@@ -375,25 +391,13 @@ function renderDisplacement(w, h, imgData, depthData) {
     fileSelectContainer.style.marginTop = "0";
     
     const gl = state.gl;
-    const buffers = makeGridBuffers(gl, w, h);
+    state.buffers = makeGridBuffers(gl, depthWidth, depthHeight);
 
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-    const texture = loadTexture(gl, imgData.data, w, h, gl.RGBA, gl.UNSIGNED_BYTE);
+    state.colorTexture = loadTexture(gl, imgData.data, sourceWidth, sourceHeight, gl.RGBA, gl.UNSIGNED_BYTE);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-    const depth = loadTexture(gl, depthData, w, h, gl.ALPHA, gl.UNSIGNED_BYTE);
-
-    let then = 0;
-    function render(now) {
-        now *= 0.001;
-        deltaTime = now - then;
-        then = now;
-
-        drawScene(state.gl, state.shaderProgramInfo, buffers, texture, depth, rotation);
-        rotation += deltaTime;
-
-        requestAnimationFrame(render);
-    }
-    requestAnimationFrame(render);    
+    state.depthTexture = loadTexture(gl, depthData, depthWidth, depthHeight, gl.ALPHA, gl.UNSIGNED_BYTE);
+    state.renderScene = true;
 }
 
 
@@ -412,9 +416,13 @@ function makeDepthMap(session, img) {
     const inputTensor = new ort.Tensor('float32', new Float32Array(imgData.data), [w, h, 4]);
     const feeds = { input: inputTensor };
     session.run(feeds).then(result => { 
+        var textureCanvas = document.getElementById("texture-canvas");
+        textureCanvas.width = textureCanvas.height = size;
+        var textureCanvasContext = textureCanvas.getContext("2d", { willReadFrequently: true });
+        textureCanvasContext.drawImage(img, xOffset, yOffset, size, size, 0, 0, size, size);
         processingModel.style.display = "none";
         cnv.style.display = "none";
-        renderDisplacement(w, h, imgData, Uint8Array.from(result.output.data));
+        renderDisplacement(size, size, w, h, textureCanvasContext.getImageData(0, 0, size, size), Uint8Array.from(result.output.data));
     });
 }
 
@@ -515,9 +523,15 @@ function get(key, customStore = defaultGetStore()) {
 }
 
 async function fetchModelBlob(url, next) {
+    const fileSelectContainer = document.getElementById("select-file");
+    const loadingModelProgess = document.getElementById("loading-model-progress");
+
+    loadingModelProgess.style.display = "block";
+    fileSelectContainer.style.display = "none";
     console.log("fetching model weights");
     const downloadProgress = document.getElementById("download-progress");
-    const modelData = await get("modelData");
+    const modelKey = "modelData" + url;
+    const modelData = await get(modelKey);
     if (modelData != null) {
         downloadProgress.value = 100;
         console.log("fetching model weights - success from cache");
@@ -543,61 +557,72 @@ async function fetchModelBlob(url, next) {
     console.log("fetching model weights - from server success=", success);
     if (success) {
         const data = new Uint8Array(xhr.response);
-        set("modelData", data);
+        set(modelKey, data);
         next(data);
-    }    
+    }
+}
+
+function initializeUI() {
+    const fileSelectContainer = document.getElementById("select-file");
+    const fileSelect = document.getElementById("file-select-button");
+    const urlInput = document.getElementById("url-input");
+    fileElem = document.getElementById("file-elem");
+    selectUrl = document.getElementById("select-url");
+    selectUrl.addEventListener("click", ()=>{
+        const img = document.createElement("img");
+        const processingModel = document.getElementById("processing-data-progress");
+        processingModel.style.display = "block";
+        fileSelectContainer.style.display = "none";
+        img.crossOrigin = "Anonymous";
+        img.onload = () => {
+            makeDepthMap(session, img);
+        }
+        img.src = urlInput.value;
+        
+    });
+
+    fileSelect.addEventListener("click", (e) => {
+        if (fileElem) {
+            fileElem.click();
+        }
+        e.preventDefault();
+        }, false);
+
+        fileElem.addEventListener("change", handleFiles, false);
+
+        function handleFiles() {
+            if (this.files.length >= 1) {
+                const img = document.createElement("img");
+                const processingModel = document.getElementById("processing-data-progress");
+                processingModel.style.display = "block";
+                fileSelectContainer.style.display = "none";
+                img.onload = () => {
+                    makeDepthMap(state.session, img);
+                }    
+                img.src = URL.createObjectURL(this.files[0]);
+            }
+    }
+
+    const selectModel = document.getElementById("select-model");
+    const modelSelection = document.getElementById("models");
+    selectModel.addEventListener("click", (e)=> {
+        state.model = modelInfo[modelSelection.value];
+        fetchModelBlob(state.model.path, createONNXSession);
+    });
 }
 
 async function createONNXSession(modelBlob) {
     try {
+        const fileSelectContainer = document.getElementById("select-file");
+        const loadingModelProgess = document.getElementById("loading-model-progress");
+
         console.log("loading model weights");
         const session = await ort.InferenceSession.create(modelBlob);
         console.log("loading model weights - success");
-        const fileSelectContainer = document.getElementById("select-file");
-        const loadingModelProgess = document.getElementById("loading-model-progress");
+        state.session = session;
         
         loadingModelProgess.style.display = "none";
         fileSelectContainer.style.display = "block";
-        const fileSelect = document.getElementById("file-select-button");
-        const urlInput = document.getElementById("url-input");
-        fileElem = document.getElementById("file-elem");
-        selectUrl = document.getElementById("select-url");
-        selectUrl.addEventListener("click", ()=>{
-            const img = document.createElement("img");
-            const processingModel = document.getElementById("processing-data-progress");
-            processingModel.style.display = "block";
-            fileSelectContainer.style.display = "none";
-            img.crossOrigin = "Anonymous";
-            img.onload = () => {
-                makeDepthMap(session, img);
-            }
-            img.src = urlInput.value;
-            
-        });
-
-        fileSelect.addEventListener("click", (e) => {
-            if (fileElem) {
-                fileElem.click();
-            }
-            e.preventDefault();
-            }, false);
-
-            fileElem.addEventListener("change", handleFiles, false);
-
-            function handleFiles() {
-                if (this.files.length >= 1) {
-                    const img = document.createElement("img");
-                    const processingModel = document.getElementById("processing-data-progress");
-                    processingModel.style.display = "block";
-                    fileSelectContainer.style.display = "none";
-                    img.onload = () => {
-                        makeDepthMap(session, img);
-                    }    
-                    img.src = URL.createObjectURL(this.files[0]);
-                }
-        }
-        
-
     } catch (e) {
         document.write(`failed to inference ONNX model: ${e}.`);
     }
@@ -605,6 +630,8 @@ async function createONNXSession(modelBlob) {
 
 
 async function main() {
+    initializeUI();
+
     fetchModelBlob(state.model.path, createONNXSession);
 }
 
