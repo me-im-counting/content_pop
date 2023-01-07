@@ -28,21 +28,53 @@
 <body style="background-color:rgb(10, 11, 28)">
     <div id="loading-model-progress" style="margin-top:20%;">
         <img src="spinner.gif" class="model-load-indicator">
-        <p>Loading AI model...</p>
+        <p class="title">Loading AI model...</p>
         <progress id="download-progress" value="0" max="100" style="margin:auto;"></progress>
         <p class="description-small">first load might take a bit</p>
     </div>
     <div id="select-file">
         <input type="file" id="file-elem" accept="image/*" style="display:none" />
-        <p>Make image 3D</p>
-        <a href="#" id="file-select-button" class="button">Select Image*</a> <br>
-        <input type="url" id="url-input" placeholder="URL to image" /><br>
-        <a href="#" id="select-url" class="button">Or use URL</a>
+        <p class="title">Make image 3D</p>
+        <a href="#" id="file-select-button" class="button">Select Image*</a>
         <p class="description">*image will not leave your device</p>
+        <br>
+        <input type="url" id="url-input" class="input-box" placeholder="URL to image" />
+        <p id="empty-url-warning" class="warning" style="display:none">No image URL provided!</p>
+        <br>
+        <a href="#" id="select-url" class="button">Or use URL</a>
+        <br>
         <canvas id="staging-canvas" style="display:none;"></canvas>
         <canvas id="texture-canvas" style="display:none;"></canvas>
         <canvas id="gl-canvas" width="800" height="600"></canvas>
+        <canvas id="composite-view-canvas" style="display:none;"></canvas>
+        <canvas id="scaling-canvas" style="display:none;"></canvas>
         <br>
+        <a href="#" id="share-image" class="button" style="display: none;">Share or Embed</a>
+        <div id="save-image-container" style="display: none;">
+            <br>
+            <p class="description">Upload this <a href="#" id="download-shareable">image(click to save)</a>
+                somewhere(for example <a href="https://imgur.com/upload" target="_blank"
+                    rel="noopener noreferrer">imgur.com</a>) and
+                use upload's URL to make a shareable link or embed code</p>
+            <br>
+            <input type="url" id="upload-input" class="input-box" placeholder="URL to uploaded image" />
+            <p id="empty-image-url-warning" class="warning" style="display:none">No image URL provided!</p>
+            <p id="not-image-url-warning" class="warning" style="display:none">Is this really a link to an
+                image(extension missing)?</p>
+            <br>
+            <div style="text-align: center;">
+                <a href="#" id="make-link" class="button" style="display: inline-block;">Make Link</a>
+                <a href="#" id="make-embed" class="button" style="display: inline-block">Make Embed</a>
+            </div>
+            <div id="make-result" style="display: none;">
+                <br>
+                <input type="url" id="make-output" class="input-box" placeholder="Result" />
+                <br>
+                <a href="#" id="copy-to-clipboard" class="button">Copy to Clipboard</a>
+            </div>
+            <br>
+
+        </div>
         <p class="description-small">AI quality</p>
         <select name="models" id="models" style="display: block; margin: auto;">
             <option value="small">MiDaS v21 Small</option>
@@ -51,12 +83,16 @@
         <br>
         <a href="#" id="select-model" class="button">Load model</a>
     </div>
+
     <div id="processing-data-progress" style="display:none;margin-top:20%;">
         <img src="spinner.gif" class="model-load-indicator">
-        <p>Using AI to extract depth...</p>
+        <p class="title">Using AI to extract depth...</p>
     </div>
     <div class="logo-container">
         <a href="mailto:contact@elasticone.com" class="mail"><img src="e1.png" class="logo"></a>
+        <a href="mailto:contact@elasticone.com">
+            <p class="description-small">Feedback/Contact</p>
+        </a>
     </div>
     </footer>
     <!-- import ONNXRuntime Web from CDN -->

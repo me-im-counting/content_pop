@@ -28,6 +28,10 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/html/index.html'));
 })
 
+app.get('/render', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public/html/render.html'));
+})
+
 httpServer.listen(3000, () => {
 	console.log('HTTP Server running on port 3000');
 });
