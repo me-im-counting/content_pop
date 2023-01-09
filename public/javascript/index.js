@@ -620,6 +620,19 @@ function validateImageUrl(url) {
     return(url.match(/\.(jpeg|jpg|gif|png)$/) != null);
 }
 
+function iOS() {
+  return [
+    'iPad Simulator',
+    'iPhone Simulator',
+    'iPod Simulator',
+    'iPad',
+    'iPhone',
+    'iPod'
+  ].includes(navigator.platform)
+  // iPad on iOS 13 detection
+  || (navigator.userAgent.includes("Mac") && "ontouchend" in document);
+}
+
 function initializeUI() {
     const fileSelectContainer = document.getElementById("select-file");
     const fileSelect = document.getElementById("file-select-button");
@@ -649,7 +662,7 @@ function initializeUI() {
             const url = window.location.origin + "/render?url=" + encodeURIComponent(uploadInput.value) + "&size=" + state.currentDepthWidth;
             makeOutput.value = url;
         }
-        
+         e.preventDefault();
     });
 
     makeEmbedButton.addEventListener('click', (e)=> {
@@ -666,31 +679,43 @@ function initializeUI() {
             const url = window.location.origin + "/render?url=" + encodeURIComponent(uploadInput.value) + "&size=" + state.currentDepthWidth;
             makeOutput.value = '<iframe width="800" height="600" src="' + url + '"scrolling="no" frameborder="0"/>';
         }
+         e.preventDefault();
     });
 
     downloadShareable.addEventListener('click', (e)=> {
-        var link = document.createElement('a');
-        link.download = 'make3d.png';
-        link.href = document.getElementById('texture-canvas').toDataURL()
-        link.click();
+        if (iOS()) {
+            document.getElementById('save-image-container').style.display = "block";
+            const saveImage = document.getElementById('save-image');
+            saveImage.src = document.getElementById('texture-canvas').toDataURL();
+            saveImage.style.display = 'block';
+        } else {
+            document.getElementById('save-image-container').style.display = "none";
+            var link = document.createElement('a');
+            link.download = 'make3d.png';
+            link.href = document.getElementById('texture-canvas').toDataURL();
+            link.click();
+        }
+        e.preventDefault();
     });
 
     copy.addEventListener('click', (e)=> {        
         navigator.clipboard.writeText(makeOutput.value);
+        e.preventDefault();
     });
 
     document.getElementById("share-image").addEventListener("click", (e)=> {
-         const shareElement = document.getElementById("save-image-container");
+         const shareElement = document.getElementById("share-container");
          if (shareElement.style.display == "block") {
             shareElement.style.display = "none";
          } else {
             shareElement.style.display = "block";
          }
+         e.preventDefault();
     });
 
     fileElem = document.getElementById("file-elem");
     selectUrl = document.getElementById("select-url");
-    selectUrl.addEventListener("click", ()=>{
+    selectUrl.addEventListener("click", (e)=>{
         if (urlInput.value.length < 5) {
             document.getElementById("empty-url-warning").style.display = "block";
         } else {
@@ -705,6 +730,7 @@ function initializeUI() {
             }
             img.src = urlInput.value;
         }
+        e.preventDefault();
     });
 
     fileSelect.addEventListener("click", (e) => {

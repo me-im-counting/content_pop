@@ -50,13 +50,19 @@
         <canvas id="scaling-canvas" style="display:none;"></canvas>
         <br>
         <a href="#" id="share-image" class="button" style="display: none;">Share or Embed</a>
-        <div id="save-image-container" style="display: none;">
+        <div id="share-container" style="display: none;">
             <br>
             <p class="description">Upload this <a href="#" id="download-shareable">image(click to save)</a>
                 somewhere(for example <a href="https://imgur.com/upload" target="_blank"
                     rel="noopener noreferrer">imgur.com</a>) and
                 use upload's URL to make a shareable link or embed code</p>
             <br>
+            <div id="save-image-container" style="display: none;">
+                <p class="warning">On iOS please download image below manually.</p>
+                <br>
+                <img id="save-image" style="width: 30%; margin: auto; display: none;" />
+                <br>
+            </div>
             <input type="url" id="upload-input" class="input-box" placeholder="URL to uploaded image" />
             <p id="empty-image-url-warning" class="warning" style="display:none">No image URL provided!</p>
             <p id="not-image-url-warning" class="warning" style="display:none">Is this really a link to an
