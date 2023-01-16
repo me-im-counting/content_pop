@@ -749,6 +749,7 @@ function initializeUI() {
                 processingModel.style.display = "block";
                 fileSelectContainer.style.display = "none";
                 img.onload = () => {
+                    document.getElementById("how-to").style.display = "none";
                     makeDepthMap(state.session, img);
                 }                
                 img.src = URL.createObjectURL(this.files[0]);

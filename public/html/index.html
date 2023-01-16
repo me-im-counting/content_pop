@@ -26,13 +26,22 @@
 </head>
 
 <body style="background-color:rgb(10, 11, 28)">
-    <div id="loading-model-progress" style="margin-top:20%;">
+    <div id="how-to" style="margin-left: auto; margin-right: auto; width: fit-content; height:225px ">
+        <img src="/images/input.png" />
+        <iframe width="270" height="225" src="https://make3d.app/render?url=/images/output.png&size=256&back-link=false"
+            scrolling="no" frameborder="0" style="display: inline-block;"></iframe>
+    </div>
+
+    <div id="loading-model-progress">
+
         <img src="spinner.gif" class="model-load-indicator">
         <p class="title">Loading AI model...</p>
         <progress id="download-progress" value="0" max="100" style="margin:auto;"></progress>
         <p class="description-small">first load might take a bit</p>
     </div>
+
     <div id="select-file">
+
         <input type="file" id="file-elem" accept="image/*" style="display:none" />
         <p class="title">Make image 3D</p>
         <a href="#" id="file-select-button" class="button">Select Image*</a>

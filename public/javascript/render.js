@@ -509,7 +509,13 @@ function initializeRenderUI() {
     const url = window.location.href;
     const queryString = url.split('?')[1];
     const params = new URLSearchParams(queryString);
-    const colorHex = params.get('color');
+    const backLink = params.get('back-link');
+    if (backLink != null) {
+        if (backLink == 'false') {
+             document.getElementById('back-link-container').style.display = 'none';
+        }
+    }
+    const colorHex = params.get('color');    
     if (colorHex != null) {
 
         document.body.style.background = '#' + colorHex;
