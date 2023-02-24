@@ -80,7 +80,6 @@
 #save-image {
   width: 40%;
   margin: auto;
-
 }
 
 progress {
@@ -131,6 +130,11 @@ p {
   color: #ef476f;
 }
 
+#how-video {
+  text-decoration: none;
+  color: #CAF0F8;
+}
+
 @media only screen and (max-device-width: 480px) {
   .button {
     width: 60%;
@@ -169,7 +173,10 @@ p {
 
   .title {
     font-size: 3.25em;
+    color: #CAF0F8;
   }
+
+
 
   .logo {
     height: 200px;
