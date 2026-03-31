@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Convert your image to 3D using AI depth estimation in the browser">
+    <meta name="keywords" content="3d, 2D to 3D, depth estimation, MiDaS">
+    <meta name="author" content="Elastic One">
+    <title>Make your image 3D</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="index.css">
+</head>
+
+<body style="background-color:rgb(10, 11, 28)">
+    <div id="how-to" style="margin-left: auto; margin-right: auto; width: fit-content; height:225px ">
+        <img src="input.png" />
+        <iframe width="270" height="225" src="render.html?url=output.png&size=256&back-link=false"
+            scrolling="no" frameborder="0" style="display: inline-block;"></iframe>
+    </div>
+
+    <div id="loading-model-progress">
+
+        <img src="spinner.gif" class="model-load-indicator">
+        <p class="title">Loading AI model...</p>
+        <progress id="download-progress" value="0" max="100" style="margin:auto;"></progress>
+        <p class="description-small">first load might take a bit</p>
+    </div>
+
+    <div id="select-file">
+
+        <input type="file" id="file-elem" accept="image/*" style="display:none" />
+        <p class="title"> <a href="https://youtube.com/shorts/PtDusYC_unM" id="how-video">Here's how to embed 3D image
+                in
+                your website...</a></p>
+        <a href="#" id="file-select-button" class="button">Select Image*</a>
+        <p class="description">*image will not leave your device</p>
+        <br>
+        <input type="url" id="url-input" class="input-box" placeholder="URL to image" />
+        <p id="empty-url-warning" class="warning" style="display:none">No image URL provided!</p>
+        <br>
+        <a href="#" id="select-url" class="button">Or use URL</a>
+        <br>
+        <canvas id="staging-canvas" style="display:none;"></canvas>
+        <canvas id="texture-canvas" style="display:none;"></canvas>
+        <canvas id="gl-canvas" width="800" height="600"></canvas>
+        <canvas id="composite-view-canvas" style="display:none;"></canvas>
+        <canvas id="scaling-canvas" style="display:none;"></canvas>
+        <br>
+        <a href="#" id="share-image" class="button" style="display: none;">Share or Embed</a>
+        <div id="share-container" style="display: none;">
+            <br>
+            <p class="description">Upload this <a href="#" id="download-shareable">image(click to save)</a>
+                somewhere(for example <a href="https://imgur.com/upload" target="_blank"
+                    rel="noopener noreferrer">imgur.com</a>) and
+                use upload's URL to make a shareable link or embed code</p>
+            <br>
+            <div id="save-image-container" style="display: none;">
+                <p class="warning">On iOS please download image below manually.</p>
+                <br>
+                <img id="save-image" style="width: 30%; margin: auto; display: none;" />
+                <br>
+            </div>
+            <input type="url" id="upload-input" class="input-box" placeholder="URL to uploaded image" />
+            <p id="empty-image-url-warning" class="warning" style="display:none">No image URL provided!</p>
+            <p id="not-image-url-warning" class="warning" style="display:none">Is this really a link to an
+                image(extension missing)?</p>
+            <br>
+            <div style="text-align: center;">
+                <a href="#" id="make-link" class="button" style="display: inline-block;">Make Link</a>
+                <a href="#" id="make-embed" class="button" style="display: inline-block">Make Embed</a>
+            </div>
+            <div id="make-result" style="display: none;">
+                <br>
+                <input type="url" id="make-output" class="input-box" placeholder="Result" />
+                <br>
+                <a href="#" id="copy-to-clipboard" class="button">Copy to Clipboard</a>
+            </div>
+            <br>
+
+        </div>
+        <p class="description-small">AI quality</p>
+        <select name="models" id="models" style="display: block; margin: auto;">
+            <option value="small">MiDaS v21 Small</option>
+            <option value="large">MiDaS v21 Large</option>
+        </select>
+        <br>
+        <a href="#" id="select-model" class="button">Load model</a>
+    </div>
+
+    <div id="processing-data-progress" style="display:none;margin-top:20%;">
+        <img src="spinner.gif" class="model-load-indicator">
+        <p class="title">Using AI to extract depth...</p>
+    </div>
+    <div class="logo-container">
+        <a href="mailto:contact@elasticone.net" class="mail"><img src="e1.png" class="logo"></a>
+        <a href="mailto:contact@elasticone.net">
+            <p class="description-small">Feedback/Contact</p>
+        </a>
+    </div>
+    </div>
+    <!-- import ONNXRuntime Web from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"
+        integrity="sha512-zhHQR0/H5SEBL3Wn6yYSaTTZej12z0hVZKOv3TwCUXT1z5qeqGcXJLLrbERYRScEDDpYIJhPC1fk31gqR783iQ=="
+        crossorigin="anonymous" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
+    <script type="text/javascript" src="index.js"></script>
+</body>
+
+</html>

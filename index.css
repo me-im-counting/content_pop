@@ -1,0 +1,189 @@
+.model-load-indicator {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.description {
+  display: block;
+  margin: 0;
+  margin-top: 10px;
+  height: fit-content;
+  font-size: 12px;
+  font-family: sans-serif;
+
+  color: #CAF0F8;
+}
+
+.description-small {
+  display: block;
+  height: 12px;
+  line-height: 12px;
+  font-size: 12px;
+  font-family: sans-serif;
+  text-decoration: none;
+  color: #CAF0F8;
+}
+
+.mail {
+  display: block;
+  font-size: 12px;
+  height: fit-content;
+  font-family: sans-serif;
+  text-decoration: none;
+  color: #CAF0F8;
+  margin: auto;
+  text-align: center;
+}
+
+#select-file {
+  display: none;
+  justify-content: center;
+  height: fit-content;
+}
+
+.button {
+  display: block;
+  width: 200px;
+  height: 30px;
+  line-height: 30px;
+  font-size: 14px;
+  font-family: sans-serif;
+  text-decoration: none;
+  color: #CAF0F8;
+  border: 2px solid #48CAE4;
+  letter-spacing: 2px;
+  text-align: center;
+  position: relative;
+  transition: all .35s;
+  align-items: center;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.input-box {
+  width: 30%;
+  align-self: center;
+  display: block;
+  margin: auto;
+}
+
+#gl-canvas {
+  margin: auto;
+  display: none;
+  height: 50vh;
+  width: 100%;
+}
+
+#save-image {
+  width: 40%;
+  margin: auto;
+}
+
+progress {
+  display: block;
+  width: 100hv;
+  height: 40px;
+  color: #03045E;
+}
+
+progress::-moz-progress-bar {
+  background: #03045E;
+}
+
+progress::-webkit-progress-value {
+  background: #03045E !important;
+}
+
+p {
+  display: block;
+  width: 100hv;
+  font-family: sans-serif;
+  text-decoration: none;
+  color: #CAF0F8;
+  letter-spacing: 2px;
+  text-align: center;
+}
+
+.button:hover {
+  color: #48CAE4;
+}
+
+.logo {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 20px;
+}
+
+
+.warning {
+  display: block;
+  margin: 0;
+  margin-top: 10px;
+  height: fit-content;
+  font-size: 12px;
+  font-family: sans-serif;
+  text-decoration: none;
+  color: #ef476f;
+}
+
+#how-video {
+  text-decoration: none;
+  color: #CAF0F8;
+}
+
+@media only screen and (max-device-width: 480px) {
+  .button {
+    width: 60%;
+    height: fit-content;
+    font-size: 3.25em;
+    padding: 20px;
+  }
+
+  .input-box {
+    width: 100%;
+    align-self: center;
+    display: block;
+    margin: auto;
+    font-size: 3.25em;
+  }
+
+  #models {
+    font-size: 3.25em;
+    width: fit-content;
+  }
+
+  .description {
+    font-size: 3.0em;
+  }
+
+  .description-small {
+    font-size: 2.25em;
+  }
+
+  progress {
+    display: block;
+    width: 80%;
+    height: 40px;
+    color: #03045E;
+  }
+
+  .title {
+    font-size: 3.25em;
+    color: #CAF0F8;
+  }
+
+
+
+  .logo {
+    height: 200px;
+    margin-top: 0%;
+  }
+
+  .warning {
+    font-size: 3.0em;
+  }
+}

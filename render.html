@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="3D depth viewer">
+    <meta name="author" content="Elastic One">
+    <title>Make your image 3D</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="index.css">
+</head>
+
+<body style="background-color:rgb(10, 11, 28)">
+    <canvas id="staging-canvas" style="display:none;"></canvas>
+    <canvas id="texture-canvas" style="display:none;"></canvas>
+    <canvas id="gl-canvas" style="width: 100%; height:80%"></canvas>
+    <canvas id="composite-view-canvas" style="display:none;"></canvas>
+    <canvas id="scaling-canvas" style="display:none;"></canvas>
+    <img id="staging-image" style="display: none;" />
+
+    <a href="https://elasticone.net" id="back-link-container">
+        <p class="description-small" id="back-link">Elastic One</p>
+    </a>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"
+        integrity="sha512-zhHQR0/H5SEBL3Wn6yYSaTTZej12z0hVZKOv3TwCUXT1z5qeqGcXJLLrbERYRScEDDpYIJhPC1fk31gqR783iQ=="
+        crossorigin="anonymous"></script>
+    <script type="text/javascript" src="render.js"></script>
+</body>
+
+</html>
