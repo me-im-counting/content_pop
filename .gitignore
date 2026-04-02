@@ -1,2 +1,3 @@
 *.onnx
+midas_part_*
 node_modules/

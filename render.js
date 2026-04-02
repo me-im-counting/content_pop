@@ -285,6 +285,13 @@ function initializeRenderer(state) {
     canvas.addEventListener('touchcancel', handleEnd);
     canvas.addEventListener('touchmove', handleMove);
 
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight * 0.9;
+        gl.viewport(0, 0, canvas.width, canvas.height);
+    }
+    window.addEventListener('resize', resizeCanvas);
+
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
 

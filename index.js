@@ -2,24 +2,14 @@
 let rotation = 0.0;
 let deltaTime = 0;
 
-const modelInfo = {
-    'small': {
-        parts: [
-            "https://models.elasticone.net/midas_part_aa",
-            "https://models.elasticone.net/midas_part_ab"
-        ],
-        desired_width: 384,
-        desired_height: 384,
-    },
-    'large': {
-        parts: [
-            "https://models.elasticone.net/midas_part_aa",
-            "https://models.elasticone.net/midas_part_ab"
-        ],
-        desired_width: 384,
-        desired_height: 384,
-    }
-}
+const modelConfig = {
+    parts: [
+        "https://models.elasticone.net/midas_part_aa",
+        "https://models.elasticone.net/midas_part_ab"
+    ],
+    desired_width: 384,
+    desired_height: 384,
+};
 
  var state = {
     gl: null,
@@ -46,7 +36,7 @@ const modelInfo = {
       },
     },
     autoRotate: true,
-    model: modelInfo['small'],
+    model: modelConfig,
     session: null,
     buffers: null,
     colorTexture: null,
@@ -329,7 +319,14 @@ function initializeRenderer(state) {
     canvas.addEventListener('touchend', handleEnd);
     canvas.addEventListener('touchcancel', handleEnd);
     canvas.addEventListener('touchmove', handleMove);
-    
+
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight * 0.9;
+        gl.viewport(0, 0, canvas.width, canvas.height);
+    }
+    window.addEventListener('resize', resizeCanvas);
+
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
@@ -692,7 +689,8 @@ function initializeUI() {
         } else {
             emptyImageUrlProvided.style.display = "none";
             makeResultDiv.style.display = "block";
-            const url = window.location.origin + "/render?url=" + encodeURIComponent(uploadInput.value) + "&size=" + state.currentDepthWidth;
+            const base = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
+            const url = base + "render.html?url=" + encodeURIComponent(uploadInput.value) + "&size=" + state.currentDepthWidth;
             makeOutput.value = url;
         }
          e.preventDefault();
@@ -709,8 +707,9 @@ function initializeUI() {
             makeResultDiv.style.display = "none";
         } else {
             makeResultDiv.style.display = "block";
-            const url = window.location.origin + "/render?url=" + encodeURIComponent(uploadInput.value) + "&size=" + state.currentDepthWidth;
-            makeOutput.value = '<iframe width="800" height="600" src="' + url + '"scrolling="no" frameborder="0"/>';
+            const base = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
+            const url = base + "render.html?url=" + encodeURIComponent(uploadInput.value) + "&size=" + state.currentDepthWidth;
+            makeOutput.value = '<iframe width="800" height="600" src="' + url + '" scrolling="no" frameborder="0"></iframe>';
         }
          e.preventDefault();
     });
@@ -789,12 +788,6 @@ function initializeUI() {
             }
     }
 
-    const selectModel = document.getElementById("select-model");
-    const modelSelection = document.getElementById("models");
-    selectModel.addEventListener("click", (e)=> {
-        state.model = modelInfo[modelSelection.value];
-        fetchModelBlob(state.model.parts, createONNXSession);
-    });
 }
 
 async function createONNXSession(modelBlob) {

@@ -42,7 +42,7 @@
         <br>
         <canvas id="staging-canvas" style="display:none;"></canvas>
         <canvas id="texture-canvas" style="display:none;"></canvas>
-        <canvas id="gl-canvas" width="800" height="600"></canvas>
+        <canvas id="gl-canvas"></canvas>
         <canvas id="composite-view-canvas" style="display:none;"></canvas>
         <canvas id="scaling-canvas" style="display:none;"></canvas>
         <br>
@@ -78,13 +78,6 @@
             <br>
 
         </div>
-        <p class="description-small">AI quality</p>
-        <select name="models" id="models" style="display: block; margin: auto;">
-            <option value="small">MiDaS v21 Small</option>
-            <option value="large">MiDaS v21 Large</option>
-        </select>
-        <br>
-        <a href="#" id="select-model" class="button">Load model</a>
     </div>
 
     <div id="processing-data-progress" style="display:none;margin-top:20%;">
